@@ -4,57 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Weight of Silence - Dead Creator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-deep: #050505;
-            --bg-accent: #1a140f;
-            --accent: #9c4a1a;
-            --accent-glow: rgba(156, 74, 26, 0.4);
-            --text-main: #d4cdc3;
-            --text-dim: #7a6e61;
-            --glass: rgba(10, 10, 10, 0.9);
+            --bg-dark: #050505;
+            --accent-rust: #9c4a1a;
+            --accent-glow: rgba(156, 74, 26, 0.3);
+            --text-gold: #d4cdc3;
+            --text-mute: #5a544e;
+            --glass-dark: rgba(12, 11, 10, 0.95);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background: radial-gradient(circle at center, var(--bg-accent) 0%, var(--bg-deep) 100%);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-gold);
+            font-family: 'Quicksand', sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Fundo com Gradiente Sombrio */
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a140f 0%, #050505 100%);
+            z-index: -2;
+        }
+
+        /* Canvas de Fumaça/Nevoeiro */
+        #smoke-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+            pointer-events: none;
         }
 
         .main-wrapper {
             width: 100%;
             max-width: 450px;
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(156, 74, 26, 0.2);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+            background: var(--glass-dark);
+            border: 1px solid rgba(156, 74, 26, 0.15);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9);
             display: flex;
-            flex-direction: column; /* Mobile first */
-            min-height: 100vh;
+            flex-direction: column; /* Mobile Top Player */
+            z-index: 10;
         }
 
         @media (min-width: 900px) {
             .main-wrapper {
-                max-width: 950px;
+                max-width: 1000px;
                 flex-direction: row-reverse;
-                min-height: 650px;
                 height: 650px;
-                border-radius: 12px;
+                border-radius: 4px;
             }
         }
 
-        /* --- PLAYER AREA --- */
+        /* --- SEÇÃO DO PLAYER --- */
         .player-section {
             padding: 40px 30px;
             display: flex;
@@ -63,180 +78,175 @@
             flex: 1.2;
         }
 
-        .cover-wrapper {
+        .cover-area {
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             aspect-ratio: 1;
-            position: relative;
             margin-bottom: 30px;
-        }
-
-        .cover-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .song-meta { text-align: center; margin-bottom: 25px; }
-        .song-meta h1 { 
-            font-family: 'Playfair Display', serif; 
-            font-size: 1.8rem; 
+        .cover-area img { width: 100%; height: 100%; object-fit: cover; }
+
+        .song-info { text-align: center; margin-bottom: 25px; }
+        .song-info h1 { 
+            font-family: 'Cinzel', serif; 
+            font-size: 1.6rem; 
             margin: 0; 
             color: #fff; 
-            font-style: italic;
+            letter-spacing: 1px;
         }
-        .song-meta p { 
+        .song-info p { 
             text-transform: uppercase; 
-            letter-spacing: 4px; 
+            letter-spacing: 3px; 
             font-size: 0.75rem; 
-            color: var(--accent); 
-            margin-top: 10px;
-            font-weight: 700;
+            color: var(--accent-rust); 
+            margin-top: 8px;
         }
 
-        /* Progress Bar */
-        .progress-container {
+        .progress-bar-container {
             width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
+            height: 3px;
+            background: rgba(255,255,255,0.05);
             cursor: pointer;
-            margin-bottom: 8px;
-            border-radius: 2px;
+            margin-bottom: 10px;
         }
+
         .progress-fill {
             height: 100%;
             width: 0%;
-            background: var(--accent);
+            background: var(--accent-rust);
             box-shadow: 0 0 10px var(--accent-glow);
-            position: relative;
         }
 
-        .time-info {
+        .time-meta {
             display: flex;
             justify-content: space-between;
             width: 100%;
             font-size: 0.7rem;
-            color: var(--text-dim);
-            font-family: monospace;
+            color: var(--text-mute);
             margin-bottom: 30px;
+            font-family: monospace;
         }
 
-        .main-controls {
+        .player-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 250px;
+            max-width: 260px;
         }
 
-        .ctrl-btn {
+        .btn {
             background: none;
             border: none;
-            color: var(--text-main);
-            font-size: 1.4rem;
+            color: var(--text-gold);
+            font-size: 1.3rem;
             cursor: pointer;
             transition: 0.3s;
         }
-        .ctrl-btn:hover { color: var(--accent); transform: scale(1.1); }
 
-        .play-btn {
-            width: 70px;
-            height: 70px;
-            background: var(--text-main);
+        .btn:hover { color: var(--accent-rust); }
+
+        .btn-play-toggle {
+            width: 65px;
+            height: 65px;
+            background: #d4cdc3;
             color: #000;
             border-radius: 50%;
-            font-size: 1.6rem;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 1.5rem;
         }
-        .play-btn:hover { background: var(--accent); }
 
-        /* --- PLAYLIST AREA --- */
+        /* --- SEÇÃO DA TRACKLIST --- */
         .tracklist-section {
             flex: 1;
             padding: 30px;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
             border-top: 1px solid rgba(156, 74, 26, 0.1);
+            overflow-y: auto;
         }
 
         @media (min-width: 900px) {
             .tracklist-section { border-top: none; border-right: 1px solid rgba(156, 74, 26, 0.1); }
         }
 
-        .tracklist-header {
-            font-size: 0.7rem;
-            letter-spacing: 3px;
+        .tracklist-label {
+            font-size: 0.65rem;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 20px;
+            color: var(--text-mute);
+            margin-bottom: 25px;
             display: block;
         }
 
-        .tracks { list-style: none; padding: 0; margin: 0; }
+        .track-list { list-style: none; padding: 0; margin: 0; }
         
         .track-item {
-            padding: 16px 12px;
+            padding: 18px 10px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
             transition: 0.3s;
             display: flex;
-            justify-content: space-between;
             align-items: center;
         }
+
         .track-item:hover { background: var(--item-hover); }
-        .track-item.active { 
-            background: rgba(156, 74, 26, 0.05); 
-            border-left: 2px solid var(--accent);
+
+        .track-item.active {
+            background: rgba(156, 74, 26, 0.05);
+            border-left: 2px solid var(--accent-rust);
         }
-        .track-item.active .t-name { color: var(--accent); font-weight: 700; }
-        
-        .t-name { font-size: 0.95rem; color: var(--text-main); transition: 0.3s; }
-        .t-dur { font-size: 0.7rem; color: var(--text-dim); }
+
+        .track-item.active .track-name { color: var(--accent-rust); font-weight: bold; }
+
+        .track-name { font-size: 0.9rem; color: var(--text-gold); }
 
     </style>
 </head>
 <body>
 
+<div class="bg-gradient"></div>
+<canvas id="smoke-canvas"></canvas>
+
 <div class="main-wrapper">
     <section class="player-section">
-        <div class="cover-wrapper">
+        <div class="cover-area">
             <img src="musicas/album_cover.jpg" alt="Dead Creator Cover">
         </div>
         
-        <div class="song-meta">
-            <h1 id="active-title">Carregando...</h1>
+        <div class="song-info">
+            <h1 id="current-song-title">Selecione uma faixa</h1>
             <p>Weight of Silence</p>
         </div>
 
-        <div class="progress-container" id="p-container">
-            <div class="progress-fill" id="p-fill"></div>
+        <div class="progress-bar-container" id="progress-box">
+            <div class="progress-fill" id="progress-fill"></div>
         </div>
-        <div class="time-info">
-            <span id="time-curr">0:00</span>
-            <span id="time-total">0:00</span>
+        <div class="time-meta">
+            <span id="curr-time">0:00</span>
+            <span id="total-time">0:00</span>
         </div>
 
-        <div class="main-controls">
-            <button class="ctrl-btn" id="m-prev"><i class="fas fa-backward"></i></button>
-            <button class="ctrl-btn play-btn" id="m-play"><i class="fas fa-play"></i></button>
-            <button class="ctrl-btn" id="m-next"><i class="fas fa-forward"></i></button>
+        <div class="player-controls">
+            <button class="btn" id="ctrl-prev"><i class="fas fa-step-backward"></i></button>
+            <button class="btn btn-play-toggle" id="ctrl-play"><i class="fas fa-play"></i></button>
+            <button class="btn" id="ctrl-next"><i class="fas fa-step-forward"></i></button>
         </div>
     </section>
 
     <section class="tracklist-section">
-        <span class="tracklist-header">Dead Creator — Full Album</span>
-        <ul class="tracks" id="track-list"></ul>
+        <span class="tracklist-label">Dead Creator — Tracklist</span>
+        <ul class="track-list" id="track-container"></ul>
     </section>
 </div>
 
-<audio id="main-audio"></audio>
+<audio id="audio-engine"></audio>
 
 <script>
-    // Sequência exata e nomes de arquivos corrigidos
     const album = [
         { title: "Tears of a Dead Creator", file: "musicas/Tears of a Dead Creator.mp3" },
         { title: "Silence", file: "musicas/Silence.mp3" },
@@ -246,32 +256,86 @@
         { title: "The Cathedral of Trees", file: "musicas/The Cathedral of Trees.mp3" }
     ];
 
-    const audio = document.getElementById('main-audio');
-    const playBtn = document.getElementById('m-play');
-    const titleDisplay = document.getElementById('active-title');
-    const fill = document.getElementById('p-fill');
-    const trackContainer = document.getElementById('track-list');
+    const audio = document.getElementById('audio-engine');
+    const playBtn = document.getElementById('ctrl-play');
+    const titleView = document.getElementById('current-song-title');
+    const fill = document.getElementById('progress-fill');
+    const listContainer = document.getElementById('track-container');
 
-    let currentIdx = 0;
+    let currentTrackIdx = 0;
 
-    function initTracklist() {
-        trackContainer.innerHTML = "";
+    // --- NEVOEIRO ANIMADO (SMOKE) ---
+    const canvas = document.getElementById('smoke-canvas');
+    const ctx = canvas.getContext('2d');
+    let smokeParticles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 200 + 100;
+            this.vx = Math.random() * 0.5 - 0.25;
+            this.vy = Math.random() * 0.5 - 0.25;
+            this.alpha = Math.random() * 0.15;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < -this.size || this.x > canvas.width + this.size || this.y < -this.size || this.y > canvas.height + this.size) {
+                this.reset();
+            }
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(156, 74, 26, ${this.alpha})`;
+            ctx.fill();
+        }
+    }
+
+    function initSmoke() {
+        for(let i=0; i<30; i++) smokeParticles.push(new Particle());
+    }
+
+    function animateSmoke() {
+        ctx.clearRect(0,0, canvas.width, canvas.height);
+        smokeParticles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateSmoke);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    initSmoke();
+    animateSmoke();
+
+    // --- LÓGICA DO PLAYER ---
+    function buildPlaylist() {
+        listContainer.innerHTML = "";
         album.forEach((track, i) => {
             const li = document.createElement('li');
-            li.className = `track-item ${i === currentIdx ? 'active' : ''}`;
-            li.innerHTML = `<span class="t-name">${track.title}</span><i class="fas fa-volume-up t-dur" style="display:${i === currentIdx ? 'block' : 'none'}"></i>`;
-            li.onclick = () => { currentIdx = i; playTrack(); };
-            trackContainer.appendChild(li);
+            li.className = `track-item ${i === currentTrackIdx ? 'active' : ''}`;
+            li.innerHTML = `<span class="track-name">${track.title}</span>`;
+            li.onclick = () => { currentTrackIdx = i; startTrack(); };
+            listContainer.appendChild(li);
         });
     }
 
-    function playTrack() {
-        const track = album[currentIdx];
-        titleDisplay.innerText = track.title;
+    function startTrack() {
+        const track = album[currentTrackIdx];
+        titleView.innerText = track.title;
         audio.src = encodeURI(track.file);
-        initTracklist();
+        buildPlaylist();
+        audio.play();
+        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
         
-        // Mobile Media Control
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: track.title,
@@ -279,9 +343,6 @@
                 artwork: [{ src: 'musicas/album_cover.jpg', type: 'image/jpeg' }]
             });
         }
-        
-        audio.play();
-        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
     }
 
     playBtn.onclick = () => {
@@ -294,42 +355,41 @@
         }
     };
 
-    document.getElementById('m-next').onclick = () => {
-        currentIdx = (currentIdx + 1) % album.length;
-        playTrack();
+    document.getElementById('ctrl-next').onclick = () => {
+        currentTrackIdx = (currentTrackIdx + 1) % album.length;
+        startTrack();
     };
 
-    document.getElementById('m-prev').onclick = () => {
-        currentIdx = (currentIdx - 1 + album.length) % album.length;
-        playTrack();
+    document.getElementById('ctrl-prev').onclick = () => {
+        currentTrackIdx = (currentTrackIdx - 1 + album.length) % album.length;
+        startTrack();
     };
 
     audio.ontimeupdate = () => {
         if(audio.duration) {
-            const pct = (audio.currentTime / audio.duration) * 100;
-            fill.style.width = pct + "%";
-            document.getElementById('time-curr').innerText = fmt(audio.currentTime);
-            document.getElementById('time-total').innerText = fmt(audio.duration);
+            const progressPct = (audio.currentTime / audio.duration) * 100;
+            fill.style.width = progressPct + "%";
+            document.getElementById('curr-time').innerText = formatTime(audio.currentTime);
+            document.getElementById('total-time').innerText = formatTime(audio.duration);
         }
     };
 
-    document.getElementById('p-container').onclick = (e) => {
+    document.getElementById('progress-box').onclick = (e) => {
         audio.currentTime = (e.offsetX / e.target.clientWidth) * audio.duration;
     };
 
-    audio.onended = () => document.getElementById('m-next').click();
-
-    function fmt(s) {
+    function formatTime(s) {
         const m = Math.floor(s/60);
         const r = Math.floor(s%60);
         return `${m}:${r < 10 ? '0' : ''}${r}`;
     }
 
-    // Inicialização silenciosa
-    titleDisplay.innerText = album[0].title;
-    audio.src = encodeURI(album[0].file);
-    initTracklist();
+    audio.onended = () => document.getElementById('ctrl-next').click();
 
+    // Start
+    titleView.innerText = album[0].title;
+    audio.src = encodeURI(album[0].file);
+    buildPlaylist();
 </script>
 </body>
 </html>
